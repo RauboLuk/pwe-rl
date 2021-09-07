@@ -11,7 +11,6 @@ const useStyles = makeStyles((theme) => ({
     padding: "2px 4px",
     display: "flex",
     alignItems: "center",
-    mxWidth: 400,
   },
   input: {
     marginLeft: theme.spacing(1),
@@ -22,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const AddTask = ({ addTodo }: { addTodo: (text: string) => void }) => {
+const AddTodo = ({ addTodo }: { addTodo: (text: string) => void }) => {
   const classes = useStyles();
   const [task, setTask] = useState<string>("");
 
@@ -52,4 +51,4 @@ const AddTask = ({ addTodo }: { addTodo: (text: string) => void }) => {
   );
 };
 
-export default AddTask;
+export default AddTodo;

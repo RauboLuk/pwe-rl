@@ -1,10 +1,11 @@
-import "./App.css";
+import { useEffect, useState } from "react";
 
-import { useState } from "react";
-import Box from "@material-ui/core/Box";
-import AddTask from "./components/AddTask";
+import Container from "@material-ui/core/Container";
 
-interface Todo {
+import AddTodo from "./components/AddTodo";
+import ListTodo from "./components/ListTodo";
+
+export interface Todo {
   id: number;
   text: string;
   isDone: boolean;
@@ -12,7 +13,7 @@ interface Todo {
 
 function App() {
   const [todos, setTodos] = useState<Todo[]>(
-    Array(3_000)
+    Array(30)
       .fill(0)
       .map((_, i) => ({
         id: Math.random(),
@@ -20,6 +21,10 @@ function App() {
         isDone: false,
       }))
   );
+
+  useEffect(() => {
+    console.log(todos?.filter((todo) => todo.isDone === true));
+  }, [todos]);
 
   const addTodo = (text: string): void => {
     setTodos((todos) => [
@@ -32,15 +37,19 @@ function App() {
     ]);
   };
 
+  const toggleTodo = (id: number): void => {
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id ? { ...todo, isDone: !todo.isDone } : todo
+      )
+    );
+  };
+
   return (
-    <Box>
-      <AddTask addTodo={addTodo} />
-      <ul>
-        {todos?.map(({ id, text }) => (
-          <li key={id}>{`${text}`}</li>
-        ))}
-      </ul>
-    </Box>
+    <Container maxWidth="md">
+      <AddTodo addTodo={addTodo} />
+      <ListTodo todos={todos} toggleTodo={toggleTodo} />
+    </Container>
   );
 }
 
