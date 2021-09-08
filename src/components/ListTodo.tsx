@@ -48,7 +48,6 @@ const ListTodo = ({ todos, toggleTodo, removeTodo }: IProps) => {
               <Checkbox
                 edge="start"
                 checked={isDone}
-                onClick={() => toggleTodo(id)}
                 tabIndex={-1}
                 disableRipple
                 inputProps={{ "aria-labelledby": labelId }}
