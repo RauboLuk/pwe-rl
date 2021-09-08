@@ -5,14 +5,14 @@ import Container from "@material-ui/core/Container";
 import AddTodo from "./components/AddTodo";
 import ListTodo from "./components/ListTodo";
 
-export interface Todo {
+export interface ITodo {
   id: number;
   text: string;
   isDone: boolean;
 }
 
 function App() {
-  const [todos, setTodos] = useState<Todo[]>(
+  const [todos, setTodos] = useState<ITodo[]>(
     Array(30)
       .fill(0)
       .map((_, i) => ({
@@ -45,10 +45,14 @@ function App() {
     );
   };
 
+  const removeTodo = (id: number): void => {
+    setTodos(todos.filter((todo) => todo.id !== id));
+  };
+
   return (
     <Container maxWidth="md">
       <AddTodo addTodo={addTodo} />
-      <ListTodo todos={todos} toggleTodo={toggleTodo} />
+      <ListTodo todos={todos} toggleTodo={toggleTodo} removeTodo={removeTodo} />
     </Container>
   );
 }

@@ -1,4 +1,4 @@
-import type { Todo } from "../App.js";
+import type { ITodo } from "../App.js";
 import { makeStyles } from "@material-ui/core/styles";
 
 import List from "@material-ui/core/List";
@@ -19,13 +19,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ListTodo = ({
-  todos,
-  toggleTodo,
-}: {
-  todos: Todo[];
+interface IProps {
+  todos: ITodo[];
   toggleTodo: (id: number) => void;
-}) => {
+  removeTodo: (id: number) => void;
+}
+
+const ListTodo = ({ todos, toggleTodo, removeTodo }: IProps) => {
   const classes = useStyles();
 
   if (!todos.length)
@@ -56,7 +56,11 @@ const ListTodo = ({
             </ListItemIcon>
             <ListItemText id={labelId} primary={text} />
             <ListItemSecondaryAction>
-              <IconButton edge="end" aria-label="delete">
+              <IconButton
+                edge="end"
+                aria-label="delete"
+                onClick={() => removeTodo(id)}
+              >
                 <DeleteIcon />
               </IconButton>
             </ListItemSecondaryAction>

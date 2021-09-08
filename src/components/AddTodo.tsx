@@ -21,16 +21,23 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const AddTodo = ({ addTodo }: { addTodo: (text: string) => void }) => {
+interface IProps {
+  addTodo: (text: string) => void;
+}
+
+const AddTodo = ({ addTodo }: IProps) => {
   const classes = useStyles();
   const [task, setTask] = useState<string>("");
+  const [error, setError] = useState<boolean>(false);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    if (error) setError(false);
     setTask(event.target.value);
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLDivElement>) => {
+  const handleSubmit = (event: React.FormEvent<HTMLDivElement>): void => {
     event.preventDefault();
+    if (!task) setError(true);
     addTodo(task);
     setTask("");
   };
@@ -38,6 +45,7 @@ const AddTodo = ({ addTodo }: { addTodo: (text: string) => void }) => {
   return (
     <Paper component="form" onSubmit={handleSubmit} className={classes.root}>
       <InputBase
+        error={error}
         value={task}
         onChange={handleChange}
         placeholder="Add task"
