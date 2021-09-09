@@ -2,8 +2,10 @@ import React, { useCallback, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 
 import AddIcon from "@material-ui/icons/Add";
+import FormControl from "@material-ui/core/FormControl";
+import FormHelperText from "@material-ui/core/FormHelperText";
 import IconButton from "@material-ui/core/IconButton";
-import InputBase from "@material-ui/core/InputBase";
+import Input from "@material-ui/core/Input";
 import Paper from "@material-ui/core/Paper";
 
 const useStyles = makeStyles((theme) => ({
@@ -32,7 +34,8 @@ const AddTodo = ({ addTodo }: IProps) => {
 
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>): void => {
-      // if (error) setError(false);
+      const value: string = event.target.value;
+      if (value) setError(false);
       setTask(event.target.value);
     },
     []
@@ -40,8 +43,12 @@ const AddTodo = ({ addTodo }: IProps) => {
 
   const handleSubmit = useCallback(
     (event: React.FormEvent<HTMLDivElement>): void => {
+      console.log("test");
       event.preventDefault();
-      // if (!task) setError(true);
+      if (!task) {
+        setError(true);
+        return;
+      }
       addTodo(task);
       setTask("");
     },
@@ -50,14 +57,20 @@ const AddTodo = ({ addTodo }: IProps) => {
 
   return (
     <Paper component="form" onSubmit={handleSubmit} className={classes.root}>
-      <InputBase
-        error={error}
-        value={task}
-        onChange={handleChange}
-        placeholder="Add task"
-        inputProps={{ "aria-label": "add task" }}
-        className={classes.input}
-      />
+      <FormControl className={classes.input}>
+        <>
+          <Input
+            error={error}
+            value={task}
+            onChange={handleChange}
+            placeholder="Add task"
+            inputProps={{ "aria-label": "add task" }}
+          />
+          {error && (
+            <FormHelperText>Task description can't be empty.</FormHelperText>
+          )}
+        </>
+      </FormControl>
       <IconButton type="submit" aria-label="add" className={classes.iconButton}>
         <AddIcon />
       </IconButton>
