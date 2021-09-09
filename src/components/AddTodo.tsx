@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 
 import AddIcon from "@material-ui/icons/Add";
@@ -30,17 +30,23 @@ const AddTodo = ({ addTodo }: IProps) => {
   const [task, setTask] = useState<string>("");
   const [error, setError] = useState<boolean>(false);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    if (error) setError(false);
-    setTask(event.target.value);
-  };
+  const handleChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>): void => {
+      // if (error) setError(false);
+      setTask(event.target.value);
+    },
+    []
+  );
 
-  const handleSubmit = (event: React.FormEvent<HTMLDivElement>): void => {
-    event.preventDefault();
-    if (!task) setError(true);
-    addTodo(task);
-    setTask("");
-  };
+  const handleSubmit = useCallback(
+    (event: React.FormEvent<HTMLDivElement>): void => {
+      event.preventDefault();
+      // if (!task) setError(true);
+      addTodo(task);
+      setTask("");
+    },
+    [task, addTodo]
+  );
 
   return (
     <Paper component="form" onSubmit={handleSubmit} className={classes.root}>

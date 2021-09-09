@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import Container from "@material-ui/core/Container";
 
@@ -22,7 +22,15 @@ function App() {
       }))
   );
 
-  const addTodo = (text: string): void => {
+  useEffect(() => {
+    setTodos(todos.sort((a, b) => a.isDone && !b.isDone ? -1 : 0));
+  }, [todos, setTodos]);
+
+  const logDoneTodos = useCallback((todos: ITodo[]): void => {
+    console.log(todos?.filter((todo) => todo.isDone === true));
+  }, []);
+
+  const addTodo = useCallback((text: string): void => {
     setTodos((todos) => [
       ...todos,
       {
@@ -31,27 +39,31 @@ function App() {
         isDone: false,
       },
     ]);
-  };
+  }, []);
 
-  const toggleTodo = (id: number): void => {
-    const toggledTodo = todos.map((todo) =>
-      todo.id === id ? { ...todo, isDone: !todo.isDone } : todo
-    );
-    logDoneTodos(toggledTodo);
-    setTodos(toggledTodo);
+  const toggleTodo = useCallback(
+    (id: number): void => {
+      const toggledTodo = todos.map((todo) =>
+        todo.id === id ? { ...todo, isDone: !todo.isDone } : todo
+      );
+      logDoneTodos(toggledTodo);
+      setTodos(toggledTodo);
+    },
+    [todos, logDoneTodos]
+  );
 
-    function logDoneTodos(todos: ITodo[]): void {
-      console.log(todos?.filter((todo) => todo.isDone === true));
-    }
-  };
-
-  const removeTodo = (id: number): void => {
-    setTodos(todos.filter((todo) => todo.id !== id));
-  };
+  const removeTodo = useCallback(
+    (id: number): void => {
+      const newTodos = todos.filter((todo) => todo.id !== id);
+      setTodos(newTodos);
+    },
+    [todos]
+  );
 
   return (
     <Container maxWidth="md">
       <AddTodo addTodo={addTodo} />
+      <SortButton sortTodos={sortTodos} />
       <ListTodo todos={todos} toggleTodo={toggleTodo} removeTodo={removeTodo} />
     </Container>
   );
