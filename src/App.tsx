@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 
 import Container from "@material-ui/core/Container";
 
 import AddTodo from "./components/AddTodo";
 import ListTodo from "./components/ListTodo";
+import SortButton from "./components/SortButton";
 
 export interface ITodo {
   id: number;
@@ -22,10 +23,6 @@ function App() {
       }))
   );
 
-  useEffect(() => {
-    setTodos(todos.sort((a, b) => a.isDone && !b.isDone ? -1 : 0));
-  }, [todos, setTodos]);
-
   const logDoneTodos = useCallback((todos: ITodo[]): void => {
     console.log(todos?.filter((todo) => todo.isDone === true));
   }, []);
@@ -39,6 +36,14 @@ function App() {
         isDone: false,
       },
     ]);
+  }, []);
+
+  const sortTodos = useCallback((): void => {
+    const sortCompletedTop = (todos: ITodo[]): ITodo[] =>
+      [...todos].sort((a: ITodo, b: ITodo): number =>
+        a.isDone && !b.isDone ? -1 : 0
+      );
+    setTodos(sortCompletedTop);
   }, []);
 
   const toggleTodo = useCallback(
