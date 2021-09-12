@@ -21,8 +21,8 @@ const useStyles = makeStyles((theme) => ({
 
 interface IProps {
   todos: ITodo[];
-  toggleTodo: (id: number) => void;
-  removeTodo: (id: number) => void;
+  toggleTodo: (id: string) => void;
+  removeTodo: (id: string) => void;
 }
 
 const ListTodo = ({ todos, toggleTodo, removeTodo }: IProps) => {

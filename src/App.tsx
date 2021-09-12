@@ -5,28 +5,23 @@ import Container from "@material-ui/core/Container";
 import AddTodo from "./components/AddTodo";
 import ListTodo from "./components/ListTodo";
 import SortButton from "./components/SortButton";
+import { Typography } from "@material-ui/core";
 
-const API_URL = process.env.REACT_APP_API_PATH
+const API_URL = process.env.REACT_APP_API_PATH;
 
 export interface ITodo {
-  id: number;
+  id: string;
   text: string;
   isDone: boolean;
 }
 
 function App() {
-  const [todos, setTodos] = useState<ITodo[]>(
-    Array(30)
-      .fill(0)
-      .map((_, i) => ({
-        id: Math.random(),
-        text: String(i),
-        isDone: false,
-      }))
-  );
+  const [todos, setTodos] = useState<ITodo[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchData = async (signal: AbortSignal) => {
+      setLoading(true);
       try {
         const response = await fetch(`${API_URL}/api/todos`, {
           method: "GET",
@@ -38,6 +33,8 @@ function App() {
         setTodos(data);
       } catch (error: unknown) {
         if (error instanceof Error) console.log(error.message);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -57,7 +54,7 @@ function App() {
     setTodos((todos) => [
       ...todos,
       {
-        id: Math.random(),
+        id: String(Math.random()),
         text,
         isDone: false,
       },
@@ -73,7 +70,7 @@ function App() {
   }, []);
 
   const toggleTodo = useCallback(
-    (id: number): void => {
+    (id: string): void => {
       const toggledTodo = todos.map((todo) =>
         todo.id === id ? { ...todo, isDone: !todo.isDone } : todo
       );
@@ -84,9 +81,16 @@ function App() {
   );
 
   const removeTodo = useCallback(
-    (id: number): void => {
-      const newTodos = todos.filter((todo) => todo.id !== id);
-      setTodos(newTodos);
+    async (id: string): Promise<void> => {
+      try {
+        await fetch(`${API_URL}/api/todos/${id}`, {
+          method: "DELETE",
+        });
+        const newTodos = todos.filter((todo) => todo.id !== id);
+        setTodos(newTodos);
+      } catch (error) {
+        console.log("Delete failed");
+      }
     },
     [todos]
   );
@@ -95,7 +99,15 @@ function App() {
     <Container maxWidth="md">
       <AddTodo addTodo={addTodo} />
       <SortButton sortTodos={sortTodos} />
-      <ListTodo todos={todos} toggleTodo={toggleTodo} removeTodo={removeTodo} />
+      {loading ? (
+        <Typography>Loading data...</Typography>
+      ) : (
+        <ListTodo
+          todos={todos}
+          toggleTodo={toggleTodo}
+          removeTodo={removeTodo}
+        />
+      )}
     </Container>
   );
 }
