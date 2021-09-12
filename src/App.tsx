@@ -50,15 +50,22 @@ function App() {
     console.log(todos?.filter((todo) => todo.isDone === true));
   }, []);
 
-  const addTodo = useCallback((text: string): void => {
-    setTodos((todos) => [
-      ...todos,
-      {
-        id: String(Math.random()),
-        text,
-        isDone: false,
-      },
-    ]);
+  const addTodo = useCallback(async (text: string): Promise<void> => {
+    try {
+      const response = await fetch(`${API_URL}/api/todos`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text,
+        }),
+      });
+      const newTodo: ITodo = await response.json();
+      setTodos((todos) => [...todos, newTodo]);
+    } catch (error) {
+      console.log("Create failed");
+    }
   }, []);
 
   const sortTodos = useCallback((): void => {
@@ -73,11 +80,6 @@ function App() {
     async (id: string): Promise<void> => {
       try {
         const todo: ITodo = todos.filter((todo) => todo.id === id)[0];
-        console.log(
-          JSON.stringify({
-            isDone: !todo.isDone,
-          })
-        );
         await fetch(`${API_URL}/api/todos/${id}`, {
           method: "PUT",
           headers: {
