@@ -1,10 +1,12 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import Container from "@material-ui/core/Container";
 
 import AddTodo from "./components/AddTodo";
 import ListTodo from "./components/ListTodo";
 import SortButton from "./components/SortButton";
+
+const API_URL = process.env.REACT_APP_API_PATH
 
 export interface ITodo {
   id: number;
@@ -22,6 +24,30 @@ function App() {
         isDone: false,
       }))
   );
+
+  useEffect(() => {
+    const fetchData = async (signal: AbortSignal) => {
+      try {
+        const response = await fetch(`${API_URL}/api/todos`, {
+          method: "GET",
+          signal,
+        });
+
+        const data = await response.json();
+
+        setTodos(data);
+      } catch (error: unknown) {
+        if (error instanceof Error) console.log(error.message);
+      }
+    };
+
+    const controller = new AbortController();
+    const { signal } = controller;
+    fetchData(signal);
+    return () => {
+      controller.abort();
+    };
+  }, []);
 
   const logDoneTodos = useCallback((todos: ITodo[]): void => {
     console.log(todos?.filter((todo) => todo.isDone === true));
