@@ -70,12 +70,31 @@ function App() {
   }, []);
 
   const toggleTodo = useCallback(
-    (id: string): void => {
-      const toggledTodo = todos.map((todo) =>
-        todo.id === id ? { ...todo, isDone: !todo.isDone } : todo
-      );
-      logDoneTodos(toggledTodo);
-      setTodos(toggledTodo);
+    async (id: string): Promise<void> => {
+      try {
+        const todo: ITodo = todos.filter((todo) => todo.id === id)[0];
+        console.log(
+          JSON.stringify({
+            isDone: !todo.isDone,
+          })
+        );
+        await fetch(`${API_URL}/api/todos/${id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            isDone: !todo.isDone,
+          }),
+        });
+        const toggledTodo = todos.map((todo) =>
+          todo.id === id ? { ...todo, isDone: !todo.isDone } : todo
+        );
+        logDoneTodos(toggledTodo);
+        setTodos(toggledTodo);
+      } catch (error) {
+        console.log("Toggle failed");
+      }
     },
     [todos, logDoneTodos]
   );
